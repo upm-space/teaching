@@ -1,4 +1,4 @@
-# Basic Websocket program communication between python-node.javascript
+# Basic Websocket program communication between python-node-javascript
 (by Luis Izquierdo)
 
 Very basic example of communication between a python program, nodejs program and a javascript client program.
