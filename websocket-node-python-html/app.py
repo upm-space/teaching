@@ -1,30 +1,23 @@
 #!/usr/bin/env python
 #
 
-'''
-from websocket import create_connection
-import time
 
-ws = create_connection("ws://localhost:8080/")
-ws.send("Some value")
-time.sleep(5)
-
-ws.close();
-'''
 
 import websocket
-import thread
+#import thread
 import time
 
+from __future__ import print_function
+
 def on_message(ws, message):
-    print "evento Mensaje " + str(message)
+    print("evento Mensaje " + str(message))
     #ws.send(str(message))
 
 def on_error(ws, error):
-    print error
+    print(error)
 
 def on_close(ws):
-    print "### closed ###"
+    print("### closed ###")
 
 def on_open(ws):
     def run(*args):
@@ -34,7 +27,7 @@ def on_open(ws):
         time.sleep(1)
         #ws.close()
         #print "thread terminating..."
-    thread.start_new_thread(run, ())
+    #thread.start_new_thread(run, ())
 
 
 if __name__ == "__main__":

@@ -5,15 +5,23 @@ Very basic example of communication between a python program, nodejs program and
 
 How it works
 
-open the websockect server (in nodejs)
+Install the dependencies
+
+    npm install
+
+Open the websockect server (in nodejs)
 
     node server.js
     
-open the index.html in a web browser (Java Script Client)
+Open the index.html in a web browser (Java Script Client)
 
-open the python websocket client
+Install the dependency
 
-     python app-py
+    pip install websocket-client
+
+Open the python websocket client
+
+     python app.py
      
 If you follow the order you will see in the html page
 
