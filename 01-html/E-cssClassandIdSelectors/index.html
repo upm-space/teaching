@@ -1,0 +1,47 @@
+<html>
+   <head>
+        <link rel="stylesheet" type="text/css" href="mystyle.css">
+        <script>
+                function addText(textToAdd){
+                    document.getElementById("display").value = document.getElementById("display").value + textToAdd; 
+                }
+                function deleteText(){
+                    document.getElementById("display").value = ""; 
+                }
+                function calculate(){
+                    document.getElementById("display").value = eval(document.getElementById("display").value); 
+                }
+             </script>
+   </head>
+   
+   <body>
+        <input type="text" name="display" id="display" disabled>
+         <table>
+            
+           <tr>
+              <td><input type="button" value="1" onclick="addText('1')"></td>
+              <td><input type="button" value="2" onclick="addText('2')"></td>
+              <td><input type="button" value="3" onclick="addText('3')"></td>
+              <td><input type="button" class="operator" name="plus" value="+" onclick="addText('+')"></td>
+           </tr>
+           <tr>
+                <td><input type="button" value="4" onclick="addText('4')"></td>
+                <td><input type="button" value="5" onclick="addText('5')"></td>
+                <td><input type="button" value="6" onclick="addText('6')"></td>
+                <td><input type="button" class="operator" name="minus" value="-" onclick="addText('-')"></td>
+            </tr>
+            <tr>
+                <td><input type="button" value="7" onclick="addText('7')"></td>
+                <td><input type="button" value="8" onclick="addText('8')"></td>
+                <td><input type="button" value="9" onclick="addText('9')"></td>
+                <td><input type="button" class="operator" name="div" value="/" onclick="addText('/')"></td>
+            </tr>
+            <tr>
+                <td><input type="button" value="C" onclick="deleteText()"></td>
+                <td><input type="button" value="0" onclick="addText('0')"></td>
+                <td><input type="button" class="operator" name="equal" value="=" onclick="calculate()"></td>
+                <td><input type="button" class="operator" name="div" value="*" onclick="addText('*')"></td>
+            </tr>
+        </table>
+   </body>
+</html>
