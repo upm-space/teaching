@@ -1,0 +1,25 @@
+input {
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+    text-align: center;
+    
+}
+
+.operator {
+    background-color:bisque;
+}
+
+#display {
+    width: 220px;
+    background-color: rgb(221, 205, 186);
+    text-align: right;
+}
+
+#deleteBtn {
+    background-color: #FF0000;
+    color : #FFFFFF;
+}
+
+
+
