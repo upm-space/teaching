@@ -12,10 +12,10 @@ const calculaPrimo = function(init, end){
     console.log(`The prime numbers are: ${primeNumbers}`);  //ES6
 }
 
+calculaPrimo(2,200)
 
 
-
-function prime(number) {
+module.exports = function prime(number) {
 
   for (let i = 2; i < number; i++) {          //ES6
 
@@ -28,4 +28,6 @@ function prime(number) {
   return number !== 1;
 }
 
-module.exports = calculaPrimo;
+
+
+//module.exports = calculaPrimo;

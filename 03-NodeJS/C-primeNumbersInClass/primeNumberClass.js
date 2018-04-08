@@ -9,7 +9,7 @@ module.exports = class PrimeNumber{
     }
 
     /** Start with the calcs */
-    calculate(){
+    calculate(callback){
         let init = this.init;
         this.primeNumbers = [];
         for (; init < this.end; init++) {
@@ -18,6 +18,7 @@ module.exports = class PrimeNumber{
                 this.primeNumbers.push(init);
             }
           }
+        callback(this.primeNumbers);
     }
 
     /**

@@ -4,5 +4,9 @@
 
 [B- Prime Numbers in a Module](./B-primeNumbersInModule). The same sample in a module.
 
-[C- Prime Numbers in a Class](./B-primeNumbersInClass). The same sample in a class.
+[C- Prime Numbers in a Class](./C-primeNumbersInClass). The same sample in a class.
+See this [link](https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Classes) for an explanation about JavaScript Classes.
+
+
+https://github.com/Parrot-Developers/mavlink/tree/master/pymavlink/generator/javascript
 
