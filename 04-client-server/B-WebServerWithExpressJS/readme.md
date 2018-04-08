@@ -19,4 +19,6 @@ npm install         # this will create a node_modules folder with all the depend
 
 * The folder node_modules is not included into git since we are not going to modify this code (see .gitignore file)
 
-See this [link]{https://medium.com/@adnanrahic/hello-world-app-with-node-js-and-express-c1eb7cfa8a30}
+See this [link](https://medium.com/@adnanrahic/hello-world-app-with-node-js-and-express-c1eb7cfa8a30)
+
+
