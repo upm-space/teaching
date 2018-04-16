@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+           var socket = io.connect('http://localhost:8080', { 'forceNew': true });
+           var activateSimulation = false;
+           var valNum = 0; 
+           function startSimulation(){
+            activateSimulation = true;
+           }
+           function stopSimulation(){
+            activateSimulation = false; 
+           }    
+           function generateSimulation(){
+               setInterval(function(){
+                   if(activateSimulation){
+                      valNum++;
+                      console.log(valNum);
+                      var mensaje = {valNumber: valNum};
+                      socket.emit('new-message', mensaje);
+                      return false;
+                   }
+                   
+                   },1)
+           }
+        </script>
+    </head>
+    <body onload="generateSimulation()">
+        <input type="button" onclick="startSimulation()" value="activate simulation">
+        <input type="button" onclick="stopSimulation()" value="stop simulation">
+    </body>
+</html>
