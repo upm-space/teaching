@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <script>
+            var svgNS = "http://www.w3.org/2000/svg";  
+            var myCircle
+            function createCircle()
+            {
+                myCircle = document.createElementNS(svgNS,"circle"); //to create a circle. for rectangle use "rectangle"
+                myCircle.setAttributeNS(null,"id","mycircle");
+                myCircle.setAttributeNS(null,"cx",100);
+                myCircle.setAttributeNS(null,"cy",100);
+                myCircle.setAttributeNS(null,"r",50);
+                myCircle.setAttributeNS(null,"fill","black");
+                myCircle.setAttributeNS(null,"stroke","none");
+                document.getElementById("mySVG").appendChild(myCircle);
+
+            }
+            function changeCircleStyle(){
+                myCircle.setAttribute("stroke","black");
+                myCircle.setAttribute("stroke-width","3");
+                myCircle.setAttribute("fill","#FF0000");
+            }
+            function moveCircle(){
+                var inter = setInterval(function(){
+                    var cirCx = myCircle.getAttribute("cx");
+                    cirCx++; 
+                    var cirCy = Math.sin(cirCx/20) *100 + 200;    
+                    myCircle.setAttribute("cx",cirCx);
+                    myCircle.setAttribute("cy",cirCy);
+                },10)
+            }
+        </script>
+    </head>
+    <body>
+        <svg width="800" height="600" id="mySVG">
+        </svg>
+        <input type="button" onclick="createCircle()" value="Create Circle"/>
+        <input type="button" onclick="changeCircleStyle()" value="Change Circle Style"/>
+        <input type="button" onclick="moveCircle()" value="Move Circle"/>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <script>
+            function changeCircleStyle(){
+                var circleObj = document.getElementById("circleSvg");
+                circleObj.setAttribute("stroke","black");
+                circleObj.setAttribute("stroke-width","3");
+                circleObj.setAttribute("fill","#FF0000");
+            }
+            function moveCircle(){
+                var circleObj = document.getElementById("circleSvg");
+                var inter = setInterval(function(){
+                    var cirCx = circleObj.getAttribute("cx");
+                    cirCx++; 
+                    var cirCy = Math.sin(cirCx/20) *100 + 200;    
+                    circleObj.setAttribute("cx",cirCx);
+                    circleObj.setAttribute("cy",cirCy);
+                },10)
+            }
+        </script>
+    </head>
+    <body>
+        <svg width="800" height="600">
+            <circle id="circleSvg" r=100 cx=120 cy=120></circle>
+        </svg>
+        <input type="button" onclick="changeCircleStyle()" value="Change Circle Style"/>
+        <input type="button" onclick="moveCircle()" value="Move Circle"/>
+    </body>
+</html>
