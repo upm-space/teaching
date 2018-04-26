@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="./attitude.css">
+        <script>
+            function setRoll(){
+                var rollVal = document.getElementById("roll").value;
+                var rollWid = document.getElementById("rollWidget");
+                rollWid.style.transform = "rotate("+ rollVal +"deg)";
+                var rollWid2 = document.getElementById("rollWidget2");
+                rollWid2.style.transform = "rotate("+ rollVal +"deg)";
+                
+            }
+            function setPitch(){
+                var pitchVal = document.getElementById("pitch").value;
+                var pitchWid = document.getElementById("pitchWidget");
+                pitchWid.style.top = pitchVal;
+            }
+        </script>
+    </head>
+    <body>
+        <div class="instrument">
+            <div>
+              <img alt="horizon_back" src="./img/horizon_back.svg" />
+            </div>
+            <div id="rollWidget">
+              <img id="pitchWidget"
+                alt="horizon_ball"
+                src="./img/horizon_ball.svg"
+              />
+            </div>
+            <div>
+              <img alt="horizon_circle" src="./img/horizon_circle.svg" id="rollWidget2"/>
+            </div>
+            <div>
+              <img src="./img/horizon_mechanics.svg" alt="horizon_mechanics" />
+              <img src="./img/fi_circle.svg" alt="fi_circle" />
+            </div>
+          </div>
+
+          <input type="text" id="roll">
+          <input type="button" onclick="setRoll()" value="Set Roll">
+          <br>
+          <input type="text" id="pitch">
+          <input type="button" onclick="setPitch()" value="Set Pitch">
+
+          
+
+    </body>
+</html>
