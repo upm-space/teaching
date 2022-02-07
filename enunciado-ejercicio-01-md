@@ -1,1 +1,17 @@
-Realizar un planificador de vuelo para un drone teniendo en cuenta los siguientes parámetros
+# Ejercicio 1- Planificador vuelo drone
+
+## Realizar un planificador de vuelo para un drone (multirrotor) teniendo en cuenta los siguientes parámetros:
+
+* Bounding box de la misión. Es decir, definición de la x,y mínima y de la x,y máxima
+* Altura de vuelo (metros).
+* Distancia focal (milímetros).
+* Dimensiones del sensor: ancho y alto (milímetros).
+* Resolución del sensor, es decir número de filas y número de columnas de píxeles.
+* Solape de las fotografías en dirección del vuelo (overlap) y lateral (sidelap)
+* Punto de aterrizaje y punto de despegue
+
+## Calcular
+* Puntos de navegación para cubrir todo el área.
+* Fotocentros.
+* Coordenadas de las esquinas de las fotografías
+
