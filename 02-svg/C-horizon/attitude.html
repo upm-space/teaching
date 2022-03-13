@@ -1,9 +1,11 @@
 <html>
     <head>
         <link rel="stylesheet" href="./attitude.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script>
-            function setRoll(){
-                var rollVal = document.getElementById("roll").value;
+            function setRoll(rollVal){
+                //var rollVal = document.getElementById("roll").value;
                 var rollWid = document.getElementById("rollWidget");
                 rollWid.style.transform = "rotate("+ rollVal +"deg)";
                 var rollWid2 = document.getElementById("rollWidget2");
@@ -14,6 +16,25 @@
                 var pitchVal = document.getElementById("pitch").value;
                 var pitchWid = document.getElementById("pitchWidget");
                 pitchWid.style.top = pitchVal;
+            }
+            function changeRoll(){
+              let rollValue = document.getElementById('sliderRoll').value;
+              document.getElementById("roll").value = rollValue;
+              setRoll(rollValue);
+
+
+
+
+
+
+
+
+            }
+
+            function changePitch(){
+              let pitchValue = document.getElementById('sliderPitch').value;
+              document.getElementById("pitch").value = pitchValue;
+              setPitch();
             }
         </script>
     </head>
@@ -37,13 +58,33 @@
             </div>
           </div>
 
-          <input type="text" id="roll">
-          <input type="button" onclick="setRoll()" value="Set Roll">
-          <br>
-          <input type="text" id="pitch">
-          <input type="button" onclick="setPitch()" value="Set Pitch">
-
-          
+          <div class="container">
+            <div class="row">
+              <div class="col-6">
+                <div class="row">
+                  <input type="text" class="form-control" id="roll" aria-describedby="emailHelp" placeholder="Enter Roll">
+                  <button type="submit" class="btn btn-primary btn-block" onclick="setRoll()">Set Roll</button>
+                </div>
+                <input id="sliderRoll" type="range" min="-90" max="90" onchange="changeRoll()" class="form-range">
+              </div>
+            <!--</div>-->
+            <!--<div class="row">-->
+              <div class="col-6">
+                <div class="row">
+                  <input type="text" class="form-control" id="pitch" aria-describedby="emailHelp" placeholder="Enter Pitch">
+                  <button type="submit" class="btn btn-primary btn-block" onclick="setPitch()">Set Pich</button>
+                </div>
+                <input id="sliderPitch" type="range" min="-90" max="90" onchange="changePitch()" class="form-range">
+              </div>
+            </div>
+            <!--
+              <div class="col-6">
+                <input type="text" id="pitch">
+                <input type="button" onclick="setPitch()" value="Set Pitch">
+                <input id="sliderPitch" type="range" min="-90" max="90" onchange="changePitch()" class="form-range">
+              </div> 
+            </div> -->
+          </div>
 
     </body>
 </html>

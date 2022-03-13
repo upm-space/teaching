@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        var svgNS = "http://www.w3.org/2000/svg";  
+        var dronePath
+        function paintPath(){
+            // https://www.w3schools.com/graphics/svg_path.asp
+            dronePath = document.createElementNS(svgNS,"path"); //to create a circle. for rectangle use "rectangle"
+            let data = "M50 50 L50 500 L100 500 L100 50 L150 50"
+            dronePath.setAttributeNS(null,"id","mycircle");
+            dronePath.setAttributeNS(null,"d",data);
+            dronePath.setAttributeNS(null,"fill","none");
+            dronePath.setAttributeNS(null,"stroke","red");
+            document.getElementById("svgContainer").appendChild(dronePath);
+        }
+        function changeViewBox(SVGWidth,  SVGHeight){
+            let vbox = `0 0 ${SVGWidth} ${SVGHeight}`
+            var svgArea = document.getElementById('svgContainer');
+            svgArea.setAttribute("viewBox",vbox);
+        }
+    </script>
+</head>
+<body>
+    <svg width="800" height="600" id="svgContainer">
+        
+    </svg>
+    <input type="button" value="Paint Path" onclick="paintPath()">
+    <input type="button" value="Change View Box" onclick="changeViewBox(1600, 1200)">
+</body>
+</html>

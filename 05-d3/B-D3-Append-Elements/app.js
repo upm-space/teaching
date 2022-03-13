@@ -4,6 +4,8 @@ const body = d3.select('body');
 // Append
 const pElement1 = body.append('p');
 const pElement2 = body.append('p');
+const svg = body.append('svg');
+
 
 /*
 Transformations. There are several types of transformation
@@ -26,3 +28,5 @@ pElement2
    .classed('clasep1', true) 
    .classed('clasep2', true)
    .text('yeah !!')
+
+svg.classed('map-container', true)

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        // https://www.motiontricks.com/creating-dynamic-svg-elements-with-javascript/
+        // https://www.w3.org/Graphics/SVG/WG/wiki/Simple_SVG_API
+        let group1, group2;
+        var svgNS = "http://www.w3.org/2000/svg";  
+        function getRndInteger(min, max) {
+            return Math.floor(Math.random() * (max - min) ) + min;
+        }
+        function createRndCircle(){
+            let cx = getRndInteger(0,800);
+            let cy = getRndInteger(0,600);
+            let radio = getRndInteger(40,200);
+            let color = `rgb(${getRndInteger(0,255)},${getRndInteger(0,255)},${getRndInteger(0,255)})`
+            /*return {
+                'cx':cx,
+                'cy':cy,
+                'r':radio,
+                'fill': color,
+                'stroke': color
+            }*/
+            let rndCircle = document.createElementNS(svgNS,"circle");
+            rndCircle.setAttributeNS(null,"cx",cx);
+            rndCircle.setAttributeNS(null,"cy",cy);
+            rndCircle.setAttributeNS(null,"r",radio);
+            rndCircle.setAttributeNS(null,"fill",color);
+            rndCircle.setAttributeNS(null,"stroke",color);
+            return rndCircle;
+        }
+        
+        function loadElements(){
+            group1 = dronePath = document.createElementNS(svgNS,"g");
+            group2 = dronePath = document.createElementNS(svgNS,"g");
+            const g = document.createElement("g");
+
+            //var g = document.documentElement.createChild( "g" );
+            //var g = document.getElementById("svgContainer").createChild( "g" );
+            for( i = 0; i < 10 ; i++)
+            {
+                group1.appendChild(createRndCircle())
+                //document.getElementById("svgContainer").appendChild(createRndCircle());
+            }
+            document.getElementById("svgContainer").appendChild(group1);
+        }
+
+        function switchVisibleCircles(){
+            if (group1.style.display === "none"){
+                group1.style.display = "block";
+            } else {
+                group1.style.display = "none"
+            }
+        }
+    </script>
+</head>
+<body onload="loadElements()">
+    <svg width="800" height="600" id="svgContainer">
+        
+    </svg>
+    <input type="button" onclick="switchVisibleCircles()" value="Hide/show circles">
+</body>
+</html>
