@@ -56,12 +56,47 @@
                 group1.style.display = "none"
             }
         }
+
+        function getCoors(evt){
+            console.log(evt);
+            let xy = translateXY(evt.x,evt.y)
+            let x = xy[0];
+            let y = xy[1];
+
+            let rndCircle = document.createElementNS(svgNS,"circle");
+            rndCircle.setAttributeNS(null,"cx",x);
+            rndCircle.setAttributeNS(null,"cy",y);
+            rndCircle.setAttributeNS(null,"r",5);
+            rndCircle.setAttributeNS(null,"fill","#000000");
+            rndCircle.setAttributeNS(null,"stroke","#000000");
+            document.getElementById("svgContainer").appendChild(rndCircle);
+
+        }
+        function translateXY(x,y){
+            svgArea = document.getElementById('svgContainer');
+            let vbox = svgArea.getAttribute('viewBox');
+            vbox = vbox.split(" ");
+            vbox = vbox.map(e => parseInt(e));
+            let newY = (parseFloat(vbox[3])/parseFloat(svgArea.getAttribute('height'))) * y
+            let newX = (parseFloat(vbox[2])/parseFloat(svgArea.getAttribute('width'))) * x
+            newX = newX + vbox[0]
+            newY = newY + vbox[1]
+            let xt = [newX, newY];
+            return xt;
+        }
+        function changeViewBox(SVGWidth,  SVGHeight){
+            //let vbox = `0 0 ${SVGWidth} ${SVGHeight}`;
+            let vbox = "0 0 " + parseInt(SVGWidth) + " " + parseInt(SVGHeight) ;
+            svgArea = document.getElementById('svgContainer');
+            svgArea.setAttribute("viewBox",vbox);
+        }
     </script>
 </head>
-<body onload="loadElements()">
-    <svg width="800" height="600" id="svgContainer">
+<body>
+    <svg width="800" height="600" id="svgContainer" onclick="getCoors(evt)">
         
     </svg>
     <input type="button" onclick="switchVisibleCircles()" value="Hide/show circles">
+    <input type="button" value="Change View Box" onclick="changeViewBox(1600, 1200)">
 </body>
 </html>

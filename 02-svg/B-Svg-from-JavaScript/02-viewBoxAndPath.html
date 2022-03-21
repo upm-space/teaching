@@ -8,6 +8,7 @@
     <script>
         var svgNS = "http://www.w3.org/2000/svg";  
         var dronePath
+        let svgArea
         function paintPath(){
             // https://www.w3schools.com/graphics/svg_path.asp
             dronePath = document.createElementNS(svgNS,"path"); //to create a circle. for rectangle use "rectangle"
@@ -19,14 +20,21 @@
             document.getElementById("svgContainer").appendChild(dronePath);
         }
         function changeViewBox(SVGWidth,  SVGHeight){
-            let vbox = `0 0 ${SVGWidth} ${SVGHeight}`
-            var svgArea = document.getElementById('svgContainer');
+            //let vbox = `0 0 ${SVGWidth} ${SVGHeight}`;
+            let vbox = "0 0 " + parseInt(SVGWidth) + " " + parseInt(SVGHeight) ;
+            svgArea = document.getElementById('svgContainer');
             svgArea.setAttribute("viewBox",vbox);
+        }
+
+        function getCoors(evt){
+            console.log(evt);
+            //const svgP = pt.matrixTransform( svg.getScreenCTM().inverse() );
+            //console.log(evt.view.getCoors());
         }
     </script>
 </head>
 <body>
-    <svg width="800" height="600" id="svgContainer">
+    <svg width="800" height="600" id="svgContainer" onclick="getCoors(evt)">
         
     </svg>
     <input type="button" value="Paint Path" onclick="paintPath()">
