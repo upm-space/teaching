@@ -5,11 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #svgContainer{
+            border: solid ;
+            position: absolute;
+            left : 200px;
+        }
+    </style>
     <script>
         // https://www.motiontricks.com/creating-dynamic-svg-elements-with-javascript/
         // https://www.w3.org/Graphics/SVG/WG/wiki/Simple_SVG_API
         let group1, group2;
         var svgNS = "http://www.w3.org/2000/svg";  
+        let state = "";
+        let strokeColor = "#000000";
+        let backColor = "#000000";
+        function fillState(_state, _stroke, _back){
+            state = _state;
+            strokeColor = _stroke;
+            backColor = _back;
+        }
         function getRndInteger(min, max) {
             return Math.floor(Math.random() * (max - min) ) + min;
         }
@@ -59,18 +74,101 @@
 
         function getCoors(evt){
             console.log(evt);
-            let xy = translateXY(evt.x,evt.y)
+            let xy = translateXY(evt.layerX,evt.layerY)
+            //let xy = [evt.x,evt.y];
+            fillinTextBox(xy);
+            //let xy = translateXY(evt.x,evt.x)
             let x = xy[0];
             let y = xy[1];
+            if(state !== '')
+            {
+                let circle = document.getElementById(state) 
+                if(circle){
+                    circle.setAttributeNS(null,"cx",x);
+                    circle.setAttributeNS(null,"cy",y);    
+                } else
+                {
+                    let rndCircle = document.createElementNS(svgNS,"circle");
+                    rndCircle.setAttributeNS(null,"cx",x);
+                    rndCircle.setAttributeNS(null,"cy",y);
+                    rndCircle.setAttributeNS(null,"r",5);
+                    rndCircle.setAttributeNS(null,"fill",backColor);
+                    rndCircle.setAttributeNS(null,"stroke",strokeColor);
+                    rndCircle.setAttributeNS(null,"id",state);
+                    document.getElementById("svgContainer").appendChild(rndCircle);
+                }
+                if (state === "xymin" || state === "xymax" ){
+                    paintPath();
+                }
+                state = '';
+            }
 
-            let rndCircle = document.createElementNS(svgNS,"circle");
-            rndCircle.setAttributeNS(null,"cx",x);
-            rndCircle.setAttributeNS(null,"cy",y);
-            rndCircle.setAttributeNS(null,"r",5);
-            rndCircle.setAttributeNS(null,"fill","#000000");
-            rndCircle.setAttributeNS(null,"stroke","#000000");
-            document.getElementById("svgContainer").appendChild(rndCircle);
+            
 
+        }
+
+        function paintPath(){
+             
+            let xmin = parseInt(document.getElementById('xmin').value);
+            let ymin = parseInt(document.getElementById('ymin').value);
+            let xmax = parseInt(document.getElementById('xmax').value);
+            let ymax = parseInt(document.getElementById('ymax').value);
+
+            let _xmin = xmin; 
+            if(_xmin > xmax){
+                xmin = xmax;
+                xmax = _xmin
+            }
+
+            let _ymin = ymin; 
+            if(_ymin > ymax){
+                ymin = ymax;
+                ymax = _ymin
+            }
+
+            /*document.getElementById('xmin').value = xmin;
+            document.getElementById('ymin').value = ymin;
+            document.getElementById('xmax').value = xmax;
+            document.getElementById('ymax').value = ymax;*/
+
+            const data = `M${xmin},${ymin} L${xmin},${ymax} L${xmax},${ymax} L${xmax},${ymin} Z`;
+
+            let pathId = 'areaPath';
+            let aoi = document.getElementById(pathId) 
+            if(aoi){
+                aoi.setAttributeNS(null,"d",data);
+            }
+            else
+            {
+                aoi = document.createElementNS(svgNS,"path"); //to create a circle. for rectangle use "rectangle"
+                aoi.setAttributeNS(null,"id",pathId);
+                aoi.setAttributeNS(null,"d",data);
+                aoi.setAttributeNS(null,"fill","none");
+                aoi.setAttributeNS(null,"stroke","red");
+                document.getElementById("svgContainer").appendChild(aoi);
+            }
+
+
+        }
+
+        function fillinTextBox(xy){
+           if(state==="xymin"){
+               document.getElementById('xmin').value = xy[0]
+               document.getElementById('ymin').value = xy[1]
+           }
+           if(state==="xymax"){
+               document.getElementById('xmax').value = xy[0]
+               document.getElementById('ymax').value = xy[1]
+           }
+           if(state==="tof"){
+               document.getElementById('tofx').value = xy[0]
+               document.getElementById('tofy').value = xy[1]
+           }
+           if(state==="land"){
+               document.getElementById('landx').value = xy[0]
+               document.getElementById('landy').value = xy[1]
+           }
+        
         }
         function translateXY(x,y){
             svgArea = document.getElementById('svgContainer');
@@ -86,7 +184,7 @@
         }
         function changeViewBox(SVGWidth,  SVGHeight){
             //let vbox = `0 0 ${SVGWidth} ${SVGHeight}`;
-            let vbox = "0 0 " + parseInt(SVGWidth) + " " + parseInt(SVGHeight) ;
+            let vbox = "0 0 " + parseInt(SVGWidth) + " -" + parseInt(SVGHeight) ;
             svgArea = document.getElementById('svgContainer');
             svgArea.setAttribute("viewBox",vbox);
         }
@@ -97,6 +195,16 @@
         
     </svg>
     <input type="button" onclick="switchVisibleCircles()" value="Hide/show circles">
-    <input type="button" value="Change View Box" onclick="changeViewBox(1600, 1200)">
+    <input type="button" value="Change View Box" onclick="changeViewBox(1600, 1200)"><br>
+    <br>
+    <input type="text" id="xmin" onclick="fillState('xymin','#00FF00','#00FF00')" placeholder="X min"><br>
+    <input type="text" id="ymin" onclick="fillState('xymin','#00FF00','#00FF00')" placeholder="Y min"><br>
+    <input type="text" id="xmax" onclick="fillState('xymax', '#00FF00','#0000FF')" placeholder="X max"><br>
+    <input type="text" id="ymax" onclick="fillState('xymax', '#00FF00','#0000FF')" placeholder="Y max"><br>
+    <br>
+    <input type="text" id="tofx" onclick="fillState('tof','#FF0000','#00FF00')" placeholder="Tof X"><br>
+    <input type="text" id="tofy" onclick="fillState('tof','#FF0000','#00FF00')" placeholder="Tof Y"><br>
+    <input type="text" id="landx" onclick="fillState('land', '#FF0000','#0000FF')" placeholder="Land X"><br>
+    <input type="text" id="landy" onclick="fillState('land', '#FF0000','#0000FF')" placeholder="Land Y"><br>
 </body>
 </html>
