@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function hideShow(element){
+            const el = document.getElementById(element);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+             } else {
+                el.style.display = 'none';
+             }
+        }
+        
+
+    </script>
+    <style>
+        #section2{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="button" value="Hide/show" onclick="hideShow('section1')"></input>
+    <div id="section1">
+        <h1>Primera sección linea 1</h1>
+        <h1>Primera sección linea 2</h1>
+        <h1>Primera sección linea 3</h1>
+        <h1>Primera sección linea 4</h1>
+        <h1>Primera sección linea 5</h1>
+        <h1>Primera sección linea 6</h1>
+        <h1>Primera sección linea 7</h1>
+        <h1>-----------------------</h1>
+    </div>
+    
+    <div id="section2">
+        <h1>Segunda sección linea 1</h1>
+        <h1>Segunda sección linea 2</h1>
+        <h1>Segunda sección linea 3</h1>
+        <h1>Segunda sección linea 4</h1>
+        <h1>Segunda sección linea 5</h1>
+        <h1>Segunda sección linea 6</h1>
+        <h1>Segunda sección linea 7</h1>
+    </div>
+    
+</body>
+</html>
