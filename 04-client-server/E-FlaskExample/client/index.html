@@ -9,6 +9,7 @@
         async function calculate(){
             let a = document.getElementById('firstNumber').value;
             let b = document.getElementById('secondNumber').value;
+            // http://192.168.1.61:5000/add_operation/1/2
             const response = await fetch(`http://127.0.0.1:5000/add_operation/${a}/${b}`);
             const data = await response.json();
             document.getElementById('result').value = data.result;
