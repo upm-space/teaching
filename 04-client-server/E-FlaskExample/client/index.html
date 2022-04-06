@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        async function calculate(){
+            let a = document.getElementById('firstNumber').value;
+            let b = document.getElementById('secondNumber').value;
+            const response = await fetch(`http://127.0.0.1:5000/add_operation/${a}/${b}`);
+            const data = await response.json();
+            document.getElementById('result').value = data.result;
+
+        }
+    </script>
+</head>
+<body>
+    <input id="firstNumber" placeholder="First Number"> <br>
+    <input id="secondNumber" placeholder="second Number"> <br>
+    <input type="button" value="calculate" onclick="calculate()"><br>
+    <input id="result">
+
+</body>
+</html>
