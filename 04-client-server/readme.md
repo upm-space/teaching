@@ -19,3 +19,7 @@ python -m SimpleHTTPServer 8000
 # para python 3
 python3 -m http.server 8000
 ```
+
+Para prevenir cors consultar
+
+https://flask-cors.readthedocs.io/en/latest/
