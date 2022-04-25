@@ -1,4 +1,4 @@
-# Arrancar el servidor html
+# Arrancar el servidor de datos
 
 ```
 cd server
