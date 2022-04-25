@@ -12,8 +12,17 @@
             // http://192.168.1.61:5000/add_operation/1/2
             const response = await fetch(`http://127.0.0.1:5000/add_operation/${a}/${b}`);
             const data = await response.json();
-            document.getElementById('result').value = data.result;
+            document.getElementById('textSuma').value = data.suma;
+            document.getElementById('textMult').value = data.multiplicacion;
+            document.getElementById('textDiv').value = data.division;
 
+        }
+
+        async function saluda(){
+            let nombre = document.getElementById('textNombre').value;
+            const response = await fetch(`http://127.0.0.1:5000/greetings/${nombre}`);
+            const data = await response.json();
+            document.getElementById('resultNombre').value = data.saludo;
         }
     </script>
 </head>
@@ -21,7 +30,12 @@
     <input id="firstNumber" placeholder="First Number"> <br>
     <input id="secondNumber" placeholder="second Number"> <br>
     <input type="button" value="calculate" onclick="calculate()"><br>
-    <input id="result">
+    <input id="textSuma"><input id="textMult"><input id="textDiv"><br><br>
+
+    <input id="textNombre" placeholder="escribe tu nombre"> <br>
+    <input type="button" value="saluda" onclick="saluda()"><br>
+    <input id="resultNombre">
+
 
 </body>
 </html>
