@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""/>
+    <!-- pro4js https://cdnjs.com/libraries/proj4js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.min.js" integrity="sha512-JToqu2hzfiepDTg9LjkVzYhUhTcYGJIj2aGOn3Q+7sPVSi2n+vmpxISCbOJ2b3I4OQmqG0KQYovX6f3Rx+etAQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- lodash https://cdnjs.com/libraries/lodash.js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+     crossorigin=""></script>
+    
+    <link rel="stylesheet" href="styles/index.css">
+    <title>Hola Mundo</title>
+    <script src="./js/index.js"></script>
+  </head>
+  <body onload="init()">
+    <h1>Hola Mundo</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 bordeNegro">menú superior</div>
+          </div>
+        <div class="row">
+            <div class="col-2 bordeNegro contenedorMapa">
+              <button type="button" class="btn btn-large btn-block btn-primary " onclick="changeStatus('TOFF')">Take off</button>
+              <button type="button" class="btn btn-large btn-block btn-primary " onclick="changeStatus('LANDING')">Landing</button>
+              <button type="button" class="btn btn-large btn-block btn-primary " onclick="calculateDistances()">Calculate Distance</button>
+              <button type="button" class="btn btn-large btn-block btn-primary " onclick="changeStatus('AOI')">AOI</button>
+
+
+              <input  class="form-control" id="inputText" placeholder="Enter your name">
+            </div>
+            <div class="col-10 bordeNegro contenedorMapa">
+                <div id="map" class="bordeNegro"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+    <script>
+
+        
+    
+    </script>   
+</body>
+</html>

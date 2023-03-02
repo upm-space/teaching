@@ -1,0 +1,10 @@
+.bordeNegro {
+    border: solid;
+    margin-top: 5px;
+}
+
+.contenedorMapa{
+    height: 80vh;
+}
+
+#map { height: 70vh; }
