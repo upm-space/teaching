@@ -1,4 +1,4 @@
-# Docker
+# Docker.
 
 ## Capítulo 1: Instalar Docker desde WSL
 
