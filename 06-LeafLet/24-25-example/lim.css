@@ -1,0 +1,32 @@
+#botonera{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 500px;
+    width: 200px;
+    border-style: solid;
+    border-color: black;
+
+}
+
+#map_lim{
+    position: absolute;
+    top: 10px;
+    left: 220px;
+    height: 500px;
+    width: 800px;
+    border-style: solid;
+    border-color: black;
+
+}
+
+
+.myBtn{
+    width: 190px;
+    margin: 5px;
+}
+
+.myTxt{
+    width: 182px;
+    margin: 5px;
+}

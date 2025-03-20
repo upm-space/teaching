@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Document</title>
+    <script src="lim.js"></script>
+    <link rel="stylesheet"  href="lim.css">
+</head>
+<body onload="init()">
+    <div id="botonera">
+        <input class="myBtn" type="button" value="Take Off" onclick="setStatus('TOFF')">
+        <input class="myBtn" type="button" value="Landing" onclick="setStatus('LANDING')">
+        <input class="myBtn" type="button" value="First corner" onclick="setStatus('1CORNER')">
+        <input class="myBtn" type="button" value="Second Corner" onclick="setStatus('2CORNER')">
+        <input class="myTxt" type="inputBox" placeholder="overlap" id="overlapTxt">
+        <input class="myTxt" type="inputBox" placeholder="data1" id="data1Txt">
+        <input class="myTxt" type="inputBox" placeholder="data2" id="data2Txt">
+        <input class="myTxt" type="inputBox" placeholder="data3" id="data3Txt">
+        <input class="myTxt" type="inputBox" placeholder="data4" id="data4Txt">
+        <input class="myTxt" type="inputBox" placeholder="data5" id="data5Txt">
+        <input class="myTxt" type="inputBox" placeholder="data6" id="data6Txt">
+        <input class="myBtn" type="button" value="Calculate" onclick="CalculateMission()">
+        <input class="myBtn" type="button" value="Save to MP" onclick="saveWaypointsToCSV()">
+    </div>
+    <div id="map_lim">
+
+    </div>
+</body>
+</html>
