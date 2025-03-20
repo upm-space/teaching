@@ -240,43 +240,43 @@ function drawFlightPath(waypoints) {
     }).addTo(map);
 }
 
-async function saveWaypointsToCSV() {
+async function saveWaypointsForMissionPlanner(waypoints) {
     if (!waypoints || waypoints.length === 0) {
         alert("No hay waypoints generados para guardar.");
         return;
     }
 
-    let csvContent = "index,command,lat,lon,altitude,param1,param2,param3,param4\n";
-
     let altitude = 50; // Puedes cambiarlo o hacerlo variable global
 
-    // Incluir Takeoff (comando 22)
-    csvContent += `0,22,${takeoffPoint.lat},${takeoffPoint.lng},${altitude},0,0,0,0\n`;
+    let fileContent = "QGC WPL 110\n"; // Primera línea obligatoria
 
-    // Incluir los waypoints generados
+    // Takeoff (comando 22)
+    fileContent += `0\t1\t3\t22\t0\t0\t0\t0\t${takeoffPoint.lat}\t${takeoffPoint.lng}\t${altitude}\t1\n`;
+
+    // Waypoints de la misión (comando 16)
     waypoints.forEach((wp, index) => {
-        csvContent += `${index + 1},16,${wp.lat},${wp.lng},${altitude},0,0,0,0\n`;
+        fileContent += `${index + 1}\t0\t3\t16\t0\t0\t0\t0\t${wp.lat}\t${wp.lng}\t${altitude}\t1\n`;
     });
 
-    // Incluir Landing (comando 21)
-    csvContent += `${waypoints.length + 1},21,${landingPoint.lat},${landingPoint.lng},0,0,0,0,0\n`;
+    // Landing (comando 21)
+    fileContent += `${waypoints.length + 1}\t0\t3\t21\t0\t0\t0\t0\t${landingPoint.lat}\t${landingPoint.lng}\t0\t1\n`;
 
     try {
         // Pedir al usuario que seleccione la ubicación donde guardar el archivo
         const fileHandle = await window.showSaveFilePicker({
-            suggestedName: "mission_waypoints.csv",
+            suggestedName: "mission.waypoints",
             types: [{
-                description: "CSV Files",
-                accept: { "text/csv": [".csv"] }
+                description: "Mission Planner Waypoints",
+                accept: { "text/plain": [".waypoints"] }
             }]
         });
 
         // Escribir el archivo
         const writable = await fileHandle.createWritable();
-        await writable.write(csvContent);
+        await writable.write(fileContent);
         await writable.close();
 
-        alert("Waypoints guardados correctamente.");
+        alert("Waypoints guardados correctamente en formato Mission Planner.");
 
     } catch (error) {
         console.error("Error al guardar el archivo:", error);
