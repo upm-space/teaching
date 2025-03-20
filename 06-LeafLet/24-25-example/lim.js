@@ -240,7 +240,7 @@ function drawFlightPath(waypoints) {
     }).addTo(map);
 }
 
-async function saveWaypointsForMissionPlanner(waypoints) {
+async function saveWaypointsForMissionPlanner() {
     if (!waypoints || waypoints.length === 0) {
         alert("No hay waypoints generados para guardar.");
         return;
