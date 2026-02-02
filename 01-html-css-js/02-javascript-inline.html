@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Inline</title>
+</head>
+<body>
+    <h1>JavaScript dentro del HTML</h1>
+
+    <p>JavaScript nos permite añadir interactividad a las páginas web.</p>
+
+    <h2>Ejemplo 1: Botón con alert</h2>
+    <button onclick="alert('¡Hola! Este es un mensaje de alerta')">
+        Haz clic aquí
+    </button>
+
+    <h2>Ejemplo 2: Modificar el contenido</h2>
+    <p id="mensaje">Este texto cambiará cuando pulses el botón.</p>
+    <button onclick="document.getElementById('mensaje').innerText = '¡El texto ha cambiado!'">
+        Cambiar texto
+    </button>
+
+    <h2>Ejemplo 3: Usar la consola</h2>
+    <button onclick="console.log('Mensaje en la consola - Abre DevTools con F12')">
+        Ver consola (F12)
+    </button>
+
+    <hr>
+
+    <h2>Ejemplo 4: Script en bloque</h2>
+    <p>Resultado: <span id="resultado">---</span></p>
+    <button onclick="calcular()">Calcular 5 + 3</button>
+
+    <script>
+        // Esta función está definida en un bloque <script>
+        function calcular() {
+            var suma = 5 + 3;
+            document.getElementById('resultado').innerText = suma;
+            console.log('El resultado de 5 + 3 es:', suma);
+        }
+
+        // Este código se ejecuta al cargar la página
+        console.log('La página se ha cargado correctamente');
+    </script>
+
+</body>
+</html>

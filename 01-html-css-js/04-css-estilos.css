@@ -1,0 +1,163 @@
+/* ===========================================
+   CSS Básico - Curso de Programación Web
+   =========================================== */
+
+/* ----- Reset básico ----- */
+* {
+    box-sizing: border-box;
+}
+
+/* ----- Estilos generales ----- */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    max-width: 800px;
+    background-color: #fafafa;
+}
+
+h1 {
+    color: #1a237e;
+    border-bottom: 2px solid #1a237e;
+    padding-bottom: 10px;
+}
+
+h2 {
+    color: #303f9f;
+    margin-top: 30px;
+}
+
+p {
+    color: #333;
+}
+
+code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #c62828;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 30px 0;
+}
+
+/* ----- Caja de información ----- */
+.caja-info {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+/* ----- Tarjetas ----- */
+.tarjeta {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta h3 {
+    margin-top: 0;
+    color: #1976d2;
+}
+
+.tarjeta-destacada {
+    border-color: #ff9800;
+    border-width: 2px;
+    background-color: #fff8e1;
+}
+
+.tarjeta-destacada h3 {
+    color: #f57c00;
+}
+
+/* ----- Selector de ID ----- */
+#elemento-unico {
+    background-color: #fce4ec;
+    border-left: 4px solid #e91e63;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+/* ----- Calculadora estilizada ----- */
+.calculadora {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.campo {
+    margin-bottom: 15px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.campo input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.campo input:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+}
+
+.botones {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1976d2;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #1565c0;
+}
+
+.btn:active {
+    background-color: #0d47a1;
+}
+
+.resultado {
+    background-color: #e8f5e9;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.resultado span {
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 24px;
+}

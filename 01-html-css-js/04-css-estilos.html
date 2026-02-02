@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS - Estilos</title>
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="04-css-estilos.css">
+
+    <!-- CSS en el head (también válido) -->
+    <style>
+        /* Estilos para la sección de ejemplo inline */
+        .ejemplo-style-tag {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-left: 4px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Introducción a CSS</h1>
+
+    <p>CSS (Cascading Style Sheets) nos permite dar estilo a nuestras páginas.</p>
+
+    <!-- Ejemplo de estilos inline (no recomendado para proyectos grandes) -->
+    <h2>1. Estilos Inline</h2>
+    <p style="color: blue; font-size: 18px; background-color: #f0f0f0; padding: 10px;">
+        Este párrafo tiene estilos inline (directamente en el atributo style).
+    </p>
+
+    <!-- Ejemplo de estilos con etiqueta <style> -->
+    <h2>2. Estilos en &lt;style&gt;</h2>
+    <div class="ejemplo-style-tag">
+        <p>Este div usa estilos definidos en la etiqueta &lt;style&gt; del head.</p>
+    </div>
+
+    <!-- Ejemplo de estilos externos -->
+    <h2>3. Estilos Externos (recomendado)</h2>
+    <div class="caja-info">
+        <p>Este div usa estilos del archivo <code>04-css-estilos.css</code></p>
+    </div>
+
+    <hr>
+
+    <h2>Selectores CSS</h2>
+
+    <!-- Selector de elemento -->
+    <p>Los párrafos tienen un estilo base definido para el elemento &lt;p&gt;</p>
+
+    <!-- Selector de clase -->
+    <div class="tarjeta">
+        <h3>Tarjeta con clase</h3>
+        <p>Usa la clase <code>.tarjeta</code></p>
+    </div>
+
+    <div class="tarjeta tarjeta-destacada">
+        <h3>Tarjeta destacada</h3>
+        <p>Usa las clases <code>.tarjeta</code> y <code>.tarjeta-destacada</code></p>
+    </div>
+
+    <!-- Selector de ID -->
+    <div id="elemento-unico">
+        <p>Este elemento tiene un ID único: <code>#elemento-unico</code></p>
+    </div>
+
+    <hr>
+
+    <h2>Calculadora con Estilos</h2>
+
+    <div class="calculadora">
+        <div class="campo">
+            <label for="num1">Número 1:</label>
+            <input type="number" id="num1" value="0">
+        </div>
+
+        <div class="campo">
+            <label for="num2">Número 2:</label>
+            <input type="number" id="num2" value="0">
+        </div>
+
+        <div class="botones">
+            <button class="btn" onclick="operar('+')">+</button>
+            <button class="btn" onclick="operar('-')">-</button>
+            <button class="btn" onclick="operar('*')">×</button>
+            <button class="btn" onclick="operar('/')">/</button>
+        </div>
+
+        <div class="resultado">
+            Resultado: <span id="resultado">0</span>
+        </div>
+    </div>
+
+    <script>
+        function operar(operacion) {
+            var n1 = parseFloat(document.getElementById('num1').value);
+            var n2 = parseFloat(document.getElementById('num2').value);
+            var resultado;
+
+            switch(operacion) {
+                case '+': resultado = n1 + n2; break;
+                case '-': resultado = n1 - n2; break;
+                case '*': resultado = n1 * n2; break;
+                case '/': resultado = n2 !== 0 ? n1 / n2 : 'Error'; break;
+            }
+
+            document.getElementById('resultado').innerText = resultado;
+        }
+    </script>
+</body>
+</html>

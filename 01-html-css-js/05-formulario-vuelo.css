@@ -1,0 +1,256 @@
+/* ===========================================
+   Plan de Vuelo - Estilos
+   =========================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    line-height: 1.6;
+}
+
+.contenedor {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ----- Header ----- */
+header {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 5px;
+}
+
+.subtitulo {
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* ----- Main ----- */
+main {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Secciones ----- */
+.seccion {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.seccion:last-child {
+    border-bottom: none;
+}
+
+.seccion h2 {
+    color: #1a237e;
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #3f51b5;
+    display: inline-block;
+}
+
+/* ----- Campos del formulario ----- */
+.campo {
+    margin-bottom: 15px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+}
+
+.campo .ayuda {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Fila de campos (2 columnas) */
+.fila {
+    display: flex;
+    gap: 15px;
+}
+
+.fila .campo {
+    flex: 1;
+}
+
+/* ----- Botones ----- */
+.botones {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primario {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.btn-primario:hover {
+    background-color: #303f9f;
+}
+
+.btn-secundario {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-secundario:hover {
+    background-color: #bdbdbd;
+}
+
+/* ----- Resumen ----- */
+.resumen {
+    background-color: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.resumen h2 {
+    color: #2e7d32;
+    border-color: #4caf50;
+}
+
+.oculto {
+    display: none;
+}
+
+.dato-resumen {
+    margin-bottom: 8px;
+}
+
+.dato-resumen strong {
+    color: #1b5e20;
+}
+
+/* ----- Lista de vuelos ----- */
+#lista-vuelos {
+    min-height: 50px;
+}
+
+.sin-vuelos {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+.vuelo-item {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.vuelo-item:hover {
+    background-color: #eeeeee;
+}
+
+.vuelo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.vuelo-matricula {
+    font-weight: bold;
+    color: #1a237e;
+    font-size: 16px;
+}
+
+.vuelo-fecha {
+    color: #666;
+    font-size: 12px;
+}
+
+.vuelo-detalles {
+    font-size: 13px;
+    color: #555;
+}
+
+/* ----- Footer ----- */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 600px) {
+    .fila {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .botones {
+        flex-direction: column;
+    }
+
+    .contenedor {
+        padding: 10px;
+    }
+
+    header, main {
+        border-radius: 0;
+    }
+}

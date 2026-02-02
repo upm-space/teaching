@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Plan de Vuelo</title>
+    <link rel="stylesheet" href="05-formulario-vuelo.css">
+</head>
+<body>
+    <div class="contenedor">
+        <header>
+            <h1>Plan de Vuelo - Dron</h1>
+            <p class="subtitulo">Sistema de registro de misiones</p>
+        </header>
+
+        <main>
+            <form id="formulario-vuelo" onsubmit="return procesarFormulario(event)">
+
+                <!-- Datos del dron -->
+                <section class="seccion">
+                    <h2>Datos del Dron</h2>
+
+                    <div class="campo">
+                        <label for="matricula">Matrícula del dron *</label>
+                        <input type="text" id="matricula" placeholder="Ej: EC-DRN001" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="modelo">Modelo</label>
+                        <select id="modelo">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="dji-mavic">DJI Mavic 3</option>
+                            <option value="dji-phantom">DJI Phantom 4</option>
+                            <option value="parrot-anafi">Parrot Anafi</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="peso">Peso (kg)</label>
+                        <input type="number" id="peso" min="0" max="25" step="0.1" value="0.9">
+                    </div>
+                </section>
+
+                <!-- Datos del vuelo -->
+                <section class="seccion">
+                    <h2>Datos del Vuelo</h2>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="origen-lat">Origen - Latitud *</label>
+                            <input type="number" id="origen-lat" step="0.000001"
+                                   placeholder="40.416775" required>
+                        </div>
+                        <div class="campo">
+                            <label for="origen-lon">Origen - Longitud *</label>
+                            <input type="number" id="origen-lon" step="0.000001"
+                                   placeholder="-3.703790" required>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="destino-lat">Destino - Latitud *</label>
+                            <input type="number" id="destino-lat" step="0.000001"
+                                   placeholder="40.453054" required>
+                        </div>
+                        <div class="campo">
+                            <label for="destino-lon">Destino - Longitud *</label>
+                            <input type="number" id="destino-lon" step="0.000001"
+                                   placeholder="-3.688344" required>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="altitud">Altitud de vuelo (m)</label>
+                            <input type="number" id="altitud" min="0" max="120" value="50">
+                            <span class="ayuda">Máximo legal: 120m en España</span>
+                        </div>
+                        <div class="campo">
+                            <label for="velocidad">Velocidad (km/h)</label>
+                            <input type="number" id="velocidad" min="0" max="60" value="20">
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="fecha-vuelo">Fecha y hora del vuelo *</label>
+                        <input type="datetime-local" id="fecha-vuelo" required>
+                    </div>
+                </section>
+
+                <!-- Observaciones -->
+                <section class="seccion">
+                    <h2>Observaciones</h2>
+
+                    <div class="campo">
+                        <label for="proposito">Propósito del vuelo</label>
+                        <select id="proposito">
+                            <option value="recreativo">Recreativo</option>
+                            <option value="fotografia">Fotografía/Vídeo</option>
+                            <option value="inspeccion">Inspección</option>
+                            <option value="cartografia">Cartografía</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="notas">Notas adicionales</label>
+                        <textarea id="notas" rows="3"
+                                  placeholder="Condiciones meteorológicas, permisos especiales, etc."></textarea>
+                    </div>
+                </section>
+
+                <!-- Botones -->
+                <div class="botones">
+                    <button type="submit" class="btn btn-primario">Registrar Plan de Vuelo</button>
+                    <button type="button" class="btn btn-secundario" onclick="limpiarFormulario()">Limpiar</button>
+                </div>
+            </form>
+
+            <!-- Resumen del plan -->
+            <section id="resumen" class="seccion resumen oculto">
+                <h2>Resumen del Plan de Vuelo</h2>
+                <div id="contenido-resumen"></div>
+            </section>
+
+            <!-- Lista de vuelos registrados -->
+            <section class="seccion">
+                <h2>Vuelos Registrados</h2>
+                <div id="lista-vuelos">
+                    <p class="sin-vuelos">No hay vuelos registrados todavía.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Curso de Programación Web - UPM - Capítulo 1</p>
+        </footer>
+    </div>
+
+    <script src="05-formulario-vuelo.js"></script>
+</body>
+</html>
