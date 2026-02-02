@@ -648,3 +648,6 @@ Sistema de gestión y monitorización de flota de drones que integra todos los c
 |---------|-------|---------|
 | 2.0 | Enero 2025 | Reestructuración completa: Git adelantado a cap 2, añadido despliegue, sin TypeScript |
 | 1.0 | - | Versión original (carpeta V1) |
+
+https://www.youtube.com/watch?v=fPqZBCqzF48
+https://youtu.be/JwuUfAWh3Jk?si=fPZK63K8wshzpXCW

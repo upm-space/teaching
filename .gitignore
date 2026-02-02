@@ -1,0 +1,37 @@
+# Dependencias (a cualquier nivel)
+**/node_modules/
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.pyc
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Archivos de build
+dist/
+build/
+*.egg-info/
+
+# Logs y bases de datos locales
+*.log
+*.sqlite
+*.db
+
+# Variables de entorno (a cualquier nivel)
+**/.env
+**/.env.local
+**/.env.*
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+
+# Carpeta antigua (opcional - descomentar si no se quiere versionar)
+# V1/
