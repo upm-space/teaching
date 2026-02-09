@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>03 - Distancia entre Puntos</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Proj4js para transformación de coordenadas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #panel {
+            position: absolute;
+            top: 10px;
+            left: 60px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            min-width: 300px;
+        }
+        #panel h3 { margin: 0 0 10px 0; }
+        #panel button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        #panel button:hover { background: #45a049; }
+        .punto-info {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .resultado {
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .resultado-haversine {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+        .resultado-proj4 {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        .resultado-leaflet {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+        .resultado h4 {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .resultado .valor {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .metodo-info {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+        }
+        #map { height: 100vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="panel">
+        <h3>📏 Medir Distancia</h3>
+        <button onclick="iniciarMedicion()">Nueva Medición</button>
+
+        <div id="punto1" class="punto-info">Punto 1: Haz clic en el mapa</div>
+        <div id="punto2" class="punto-info">Punto 2: ---</div>
+
+        <div id="resultadoHaversine" class="resultado resultado-haversine" style="display: none;">
+            <h4>🌍 Método Haversine</h4>
+            <div class="valor" id="valorHaversine">-</div>
+            <div class="metodo-info">Fórmula esférica sobre WGS84</div>
+        </div>
+
+        <div id="resultadoProj4" class="resultado resultado-proj4" style="display: none;">
+            <h4>📐 Método Proj4 (UTM 30N)</h4>
+            <div class="valor" id="valorProj4">-</div>
+            <div class="metodo-info">Proyección a EPSG:25830 (UTM zona 30N) + distancia euclidiana</div>
+        </div>
+
+        <div id="resultadoLeaflet" class="resultado resultado-leaflet" style="display: none;">
+            <h4>🍃 Método Leaflet (map.distance)</h4>
+            <div class="valor" id="valorLeaflet">-</div>
+            <div class="metodo-info">Función nativa de Leaflet para comparar</div>
+        </div>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([40.416775, -3.703790], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var punto1 = null;
+        var punto2 = null;
+        var marker1 = null;
+        var marker2 = null;
+        var linea = null;
+        var midiendo = false;
+
+        // Iconos de colores
+        var iconVerde = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var iconRojo = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        function iniciarMedicion() {
+            // Limpiar anterior
+            if (marker1) map.removeLayer(marker1);
+            if (marker2) map.removeLayer(marker2);
+            if (linea) map.removeLayer(linea);
+
+            punto1 = null;
+            punto2 = null;
+            marker1 = null;
+            marker2 = null;
+            linea = null;
+            midiendo = true;
+
+            document.getElementById('punto1').innerText = 'Punto 1: Haz clic en el mapa';
+            document.getElementById('punto2').innerText = 'Punto 2: ---';
+            document.getElementById('resultadoHaversine').style.display = 'none';
+            document.getElementById('resultadoProj4').style.display = 'none';
+            document.getElementById('resultadoLeaflet').style.display = 'none';
+        }
+
+        map.on('click', function(e) {
+            if (!midiendo) return;
+
+            if (!punto1) {
+                // Primer punto
+                punto1 = e.latlng;
+                marker1 = L.marker([punto1.lat, punto1.lng], {icon: iconVerde}).addTo(map);
+                marker1.bindPopup('Punto 1').openPopup();
+                document.getElementById('punto1').innerText =
+                    'Punto 1: ' + punto1.lat.toFixed(6) + ', ' + punto1.lng.toFixed(6);
+                document.getElementById('punto2').innerText = 'Punto 2: Haz clic en el mapa';
+            }
+            else if (!punto2) {
+                // Segundo punto
+                punto2 = e.latlng;
+                marker2 = L.marker([punto2.lat, punto2.lng], {icon: iconRojo}).addTo(map);
+                marker2.bindPopup('Punto 2').openPopup();
+                document.getElementById('punto2').innerText =
+                    'Punto 2: ' + punto2.lat.toFixed(6) + ', ' + punto2.lng.toFixed(6);
+
+                // Dibujar línea
+                linea = L.polyline([
+                    [punto1.lat, punto1.lng],
+                    [punto2.lat, punto2.lng]
+                ], {
+                    color: 'blue',
+                    weight: 3,
+                    dashArray: '10, 10'
+                }).addTo(map);
+
+                // Calcular con los tres métodos
+                var distanciaHaversine = calcularDistanciaHaversine(
+                    punto1.lat, punto1.lng,
+                    punto2.lat, punto2.lng
+                );
+
+                var distanciaProj4 = calcularDistanciaProj4(
+                    punto1.lat, punto1.lng,
+                    punto2.lat, punto2.lng
+                );
+
+                // Método nativo de Leaflet (usa Haversine internamente)
+                var distanciaLeaflet = map.distance(punto1, punto2);
+
+                // Mostrar resultado Haversine
+                document.getElementById('resultadoHaversine').style.display = 'block';
+                document.getElementById('valorHaversine').innerText = formatearDistancia(distanciaHaversine);
+
+                // Mostrar resultado Proj4
+                document.getElementById('resultadoProj4').style.display = 'block';
+                document.getElementById('valorProj4').innerText = formatearDistancia(distanciaProj4);
+
+                // Mostrar resultado Leaflet
+                document.getElementById('resultadoLeaflet').style.display = 'block';
+                document.getElementById('valorLeaflet').innerText = formatearDistancia(distanciaLeaflet);
+
+                // Log para comparar
+                console.log('Distancia Haversine:', distanciaHaversine.toFixed(2), 'm');
+                console.log('Distancia Proj4:', distanciaProj4.toFixed(2), 'm');
+                console.log('Distancia Leaflet:', distanciaLeaflet.toFixed(2), 'm');
+                console.log('Diferencia Haversine-Proj4:', Math.abs(distanciaHaversine - distanciaProj4).toFixed(2), 'm');
+
+                midiendo = false;
+            }
+        });
+
+        /**
+         * Formatea la distancia para mostrar
+         */
+        function formatearDistancia(metros) {
+            if (metros >= 1000) {
+                return (metros / 1000).toFixed(3) + ' km';
+            } else {
+                return metros.toFixed(2) + ' m';
+            }
+        }
+
+        /**
+         * MÉTODO 1: Fórmula de Haversine
+         * Calcula distancia sobre la superficie de una esfera (modelo simplificado de la Tierra)
+         * Trabaja directamente con coordenadas WGS84 (EPSG:4326)
+         */
+        function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
+            var R = 6371000; // Radio de la Tierra en metros
+
+            // Convertir grados a radianes
+            var phi1 = lat1 * Math.PI / 180;
+            var phi2 = lat2 * Math.PI / 180;
+            var deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            var deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            // Fórmula de Haversine
+            var a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                    Math.cos(phi1) * Math.cos(phi2) *
+                    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+
+        /**
+         * MÉTODO 2: Proyección con Proj4
+         * 1. Transforma coordenadas de WGS84 (EPSG:4326) a UTM zona 30N (EPSG:25830)
+         * 2. En UTM las unidades son metros, se puede usar distancia euclidiana
+         *
+         * EPSG:25830 = ETRS89 / UTM zone 30N (para España peninsular)
+         */
+        // Definir la proyección UTM 30N (no viene por defecto en proj4)
+        proj4.defs('EPSG:25830', '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+        function calcularDistanciaProj4(lat1, lon1, lat2, lon2) {
+            // Proj4 espera [longitud, latitud] (no [lat, lng])
+            var punto1_4326 = [lon1, lat1];
+            var punto2_4326 = [lon2, lat2];
+
+            // Transformar a UTM 30N (EPSG:25830)
+            var punto1_utm = proj4('EPSG:4326', 'EPSG:25830', punto1_4326);
+            var punto2_utm = proj4('EPSG:4326', 'EPSG:25830', punto2_4326);
+
+            // Distancia euclidiana en metros
+            var dx = punto2_utm[0] - punto1_utm[0];
+            var dy = punto2_utm[1] - punto1_utm[1];
+
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Iniciar automáticamente
+        iniciarMedicion();
+    </script>
+</body>
+</html>

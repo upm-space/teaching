@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04 - Ejercicio: Planificador de Vuelo Fotogramétrico</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; display: flex; }
+
+        #panel {
+            width: 320px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #f5f5f5;
+            padding: 15px;
+            border-right: 1px solid #ccc;
+        }
+
+        #panel h2 { margin: 0 0 15px 0; font-size: 18px; color: #333; }
+        #panel h3 { margin: 15px 0 10px 0; font-size: 14px; color: #666; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+
+        .btn-group { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
+
+        .btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 12px;
+        }
+        .btn:hover { background: #e0e0e0; }
+        .btn.active { background: #4CAF50; color: white; border-color: #4CAF50; }
+        .btn.primary { background: #2196F3; color: white; border-color: #2196F3; }
+        .btn.primary:hover { background: #1976D2; }
+
+        .campo { margin-bottom: 10px; }
+        .campo label { display: block; font-size: 12px; color: #555; margin-bottom: 3px; }
+        .campo input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .fila { display: flex; gap: 10px; }
+        .fila .campo { flex: 1; }
+
+        .punto-status {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            font-size: 12px;
+            border-left: 3px solid #ccc;
+        }
+        .punto-status.set { border-left-color: #4CAF50; }
+
+        .resultado {
+            padding: 12px;
+            margin-top: 15px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .resultado h4 { margin: 0 0 10px 0; }
+        .resultado p { margin: 5px 0; }
+
+        #map { flex: 1; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="panel">
+        <h2>🛩️ Planificador de Vuelo</h2>
+
+        <!-- Puntos en el mapa -->
+        <h3>1. Definir puntos (clic en mapa)</h3>
+        <div class="btn-group">
+            <button class="btn" id="btnTakeoff" onclick="setMode('takeoff')">🟢 Takeoff</button>
+            <button class="btn" id="btnLanding" onclick="setMode('landing')">🔴 Landing</button>
+            <button class="btn" id="btnCorner1" onclick="setMode('corner1')">1️⃣ Esquina 1</button>
+            <button class="btn" id="btnCorner2" onclick="setMode('corner2')">2️⃣ Esquina 2</button>
+        </div>
+
+        <div id="statusTakeoff" class="punto-status">Takeoff: No definido</div>
+        <div id="statusLanding" class="punto-status">Landing: No definido</div>
+        <div id="statusCorner1" class="punto-status">Esquina 1: No definida</div>
+        <div id="statusCorner2" class="punto-status">Esquina 2: No definida</div>
+
+        <!-- Parámetros del sensor -->
+        <h3>2. Parámetros del sensor</h3>
+
+        <div class="fila">
+            <div class="campo">
+                <label>Ancho sensor (mm)</label>
+                <input type="number" id="sensorAncho" value="13.2" step="0.1">
+            </div>
+            <div class="campo">
+                <label>Alto sensor (mm)</label>
+                <input type="number" id="sensorAlto" value="8.8" step="0.1">
+            </div>
+        </div>
+
+        <div class="campo">
+            <label>Distancia focal (mm)</label>
+            <input type="number" id="focal" value="8.8" step="0.1">
+        </div>
+
+        <div class="fila">
+            <div class="campo">
+                <label>Píxeles ancho</label>
+                <input type="number" id="pixelesAncho" value="4000">
+            </div>
+            <div class="campo">
+                <label>Píxeles alto</label>
+                <input type="number" id="pixelesAlto" value="3000">
+            </div>
+        </div>
+
+        <!-- Parámetros del vuelo -->
+        <h3>3. Parámetros del vuelo</h3>
+
+        <div class="campo">
+            <label>Altura de vuelo (m)</label>
+            <input type="number" id="altura" value="100" step="1">
+        </div>
+
+        <div class="fila">
+            <div class="campo">
+                <label>Solape frontal (%)</label>
+                <input type="number" id="solapeFrontal" value="80" min="0" max="99">
+            </div>
+            <div class="campo">
+                <label>Solape lateral (%)</label>
+                <input type="number" id="solapeLateral" value="60" min="0" max="99">
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <h3>4. Calcular</h3>
+        <div class="btn-group">
+            <button class="btn primary" onclick="calcularMision()">📐 Calcular Waypoints</button>
+            <button class="btn" onclick="limpiarTodo()">🗑️ Limpiar</button>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultados" class="resultado" style="display: none;">
+            <h4>Resultados</h4>
+            <p><strong>GSD:</strong> <span id="resGSD">-</span> cm/px</p>
+            <p><strong>Huella imagen:</strong> <span id="resHuella">-</span></p>
+            <p><strong>Separación pasadas:</strong> <span id="resSepPasadas">-</span> m</p>
+            <p><strong>Separación fotos:</strong> <span id="resSepFotos">-</span> m</p>
+            <p><strong>Nº Waypoints:</strong> <span id="resWaypoints">-</span></p>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        // =====================================================
+        // EJERCICIO: PLANIFICADOR DE VUELO FOTOGRAMÉTRICO
+        // =====================================================
+        //
+        // OBJETIVO:
+        // Crear una aplicación que calcule los waypoints para
+        // un vuelo fotogramétrico de dron, dado:
+        // - Punto de despegue (takeoff)
+        // - Punto de aterrizaje (landing)
+        // - Área de interés (definida por dos esquinas)
+        // - Parámetros del sensor y del vuelo
+        //
+        // TAREAS A IMPLEMENTAR:
+        //
+        // 1. Completar la función calcularMision() para:
+        //    a) Calcular el GSD (Ground Sample Distance)
+        //       GSD = (altura * tamaño_pixel) / focal
+        //       donde tamaño_pixel = tamaño_sensor / num_pixeles
+        //
+        //    b) Calcular la huella de la imagen en el suelo
+        //       huella_ancho = GSD * pixeles_ancho
+        //       huella_alto = GSD * pixeles_alto
+        //
+        //    c) Calcular la separación entre pasadas (usando solape lateral)
+        //       separacion_pasadas = huella_ancho * (1 - solape_lateral/100)
+        //
+        //    d) Calcular la separación entre fotos (usando solape frontal)
+        //       separacion_fotos = huella_alto * (1 - solape_frontal/100)
+        //
+        //    e) Generar los waypoints en patrón de zigzag cubriendo
+        //       el área de interés, respetando las separaciones calculadas
+        //
+        // 2. Convertir las separaciones de metros a grados para
+        //    poder posicionar los waypoints en el mapa.
+        //    PISTA: 1 grado de latitud ≈ 111,320 metros
+        //           1 grado de longitud ≈ 111,320 * cos(latitud) metros
+        //
+        // 3. Dibujar los waypoints y la ruta de vuelo en el mapa
+        //
+        // 4. Mostrar los resultados en el panel
+        //
+        // =====================================================
+
+        var map = L.map('map').setView([40.416775, -3.703790], 14);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Estado de la aplicación
+        var modo = '';
+        var takeoffPoint = null;
+        var landingPoint = null;
+        var corner1Point = null;
+        var corner2Point = null;
+
+        // Elementos del mapa
+        var markerTakeoff = null;
+        var markerLanding = null;
+        var markerCorner1 = null;
+        var markerCorner2 = null;
+        var areaPoligono = null;
+        var waypointMarkers = [];
+        var flightPath = null;
+
+        // Iconos
+        var iconVerde = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        var iconRojo = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        var iconAmarillo = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        // Cambiar modo de selección
+        function setMode(nuevoModo) {
+            modo = nuevoModo;
+            // Actualizar botones
+            document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn' + nuevoModo.charAt(0).toUpperCase() + nuevoModo.slice(1)).classList.add('active');
+        }
+
+        // Click en el mapa
+        map.on('click', function(e) {
+            if (modo === 'takeoff') {
+                takeoffPoint = e.latlng;
+                if (markerTakeoff) map.removeLayer(markerTakeoff);
+                markerTakeoff = L.marker([e.latlng.lat, e.latlng.lng], {icon: iconVerde}).addTo(map);
+                markerTakeoff.bindPopup('Takeoff');
+                actualizarStatus('Takeoff', e.latlng);
+            }
+            else if (modo === 'landing') {
+                landingPoint = e.latlng;
+                if (markerLanding) map.removeLayer(markerLanding);
+                markerLanding = L.marker([e.latlng.lat, e.latlng.lng], {icon: iconRojo}).addTo(map);
+                markerLanding.bindPopup('Landing');
+                actualizarStatus('Landing', e.latlng);
+            }
+            else if (modo === 'corner1') {
+                corner1Point = e.latlng;
+                if (markerCorner1) map.removeLayer(markerCorner1);
+                markerCorner1 = L.marker([e.latlng.lat, e.latlng.lng], {icon: iconAmarillo}).addTo(map);
+                markerCorner1.bindPopup('Esquina 1');
+                actualizarStatus('Corner1', e.latlng);
+                dibujarArea();
+            }
+            else if (modo === 'corner2') {
+                corner2Point = e.latlng;
+                if (markerCorner2) map.removeLayer(markerCorner2);
+                markerCorner2 = L.marker([e.latlng.lat, e.latlng.lng], {icon: iconAmarillo}).addTo(map);
+                markerCorner2.bindPopup('Esquina 2');
+                actualizarStatus('Corner2', e.latlng);
+                dibujarArea();
+            }
+        });
+
+        function actualizarStatus(tipo, latlng) {
+            var elem = document.getElementById('status' + tipo);
+            elem.innerText = tipo.replace('Corner', 'Esquina ') + ': ' +
+                             latlng.lat.toFixed(6) + ', ' + latlng.lng.toFixed(6);
+            elem.classList.add('set');
+        }
+
+        function dibujarArea() {
+            if (!corner1Point || !corner2Point) return;
+
+            if (areaPoligono) map.removeLayer(areaPoligono);
+
+            var latmin = Math.min(corner1Point.lat, corner2Point.lat);
+            var latmax = Math.max(corner1Point.lat, corner2Point.lat);
+            var lngmin = Math.min(corner1Point.lng, corner2Point.lng);
+            var lngmax = Math.max(corner1Point.lng, corner2Point.lng);
+
+            areaPoligono = L.polygon([
+                [latmin, lngmin],
+                [latmax, lngmin],
+                [latmax, lngmax],
+                [latmin, lngmax]
+            ], {
+                color: 'orange',
+                weight: 2,
+                fillOpacity: 0.1
+            }).addTo(map);
+        }
+
+        function limpiarTodo() {
+            // Limpiar marcadores
+            if (markerTakeoff) map.removeLayer(markerTakeoff);
+            if (markerLanding) map.removeLayer(markerLanding);
+            if (markerCorner1) map.removeLayer(markerCorner1);
+            if (markerCorner2) map.removeLayer(markerCorner2);
+            if (areaPoligono) map.removeLayer(areaPoligono);
+            if (flightPath) map.removeLayer(flightPath);
+            waypointMarkers.forEach(m => map.removeLayer(m));
+
+            // Reset estado
+            takeoffPoint = landingPoint = corner1Point = corner2Point = null;
+            markerTakeoff = markerLanding = markerCorner1 = markerCorner2 = null;
+            areaPoligono = flightPath = null;
+            waypointMarkers = [];
+            modo = '';
+
+            // Reset UI
+            document.querySelectorAll('.punto-status').forEach(elem => {
+                elem.classList.remove('set');
+            });
+            document.getElementById('statusTakeoff').innerText = 'Takeoff: No definido';
+            document.getElementById('statusLanding').innerText = 'Landing: No definido';
+            document.getElementById('statusCorner1').innerText = 'Esquina 1: No definida';
+            document.getElementById('statusCorner2').innerText = 'Esquina 2: No definida';
+            document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('resultados').style.display = 'none';
+        }
+
+        // =====================================================
+        // TODO: IMPLEMENTAR ESTA FUNCIÓN
+        // =====================================================
+        function calcularMision() {
+            // Validar que todos los puntos estén definidos
+            if (!takeoffPoint || !landingPoint || !corner1Point || !corner2Point) {
+                alert('Define todos los puntos antes de calcular');
+                return;
+            }
+
+            // Obtener parámetros del formulario
+            var sensorAncho = parseFloat(document.getElementById('sensorAncho').value); // mm
+            var sensorAlto = parseFloat(document.getElementById('sensorAlto').value);   // mm
+            var focal = parseFloat(document.getElementById('focal').value);             // mm
+            var pixelesAncho = parseInt(document.getElementById('pixelesAncho').value);
+            var pixelesAlto = parseInt(document.getElementById('pixelesAlto').value);
+            var altura = parseFloat(document.getElementById('altura').value);           // metros
+            var solapeFrontal = parseFloat(document.getElementById('solapeFrontal').value); // %
+            var solapeLateral = parseFloat(document.getElementById('solapeLateral').value); // %
+
+            // Límites del área
+            var latmin = Math.min(corner1Point.lat, corner2Point.lat);
+            var latmax = Math.max(corner1Point.lat, corner2Point.lat);
+            var lngmin = Math.min(corner1Point.lng, corner2Point.lng);
+            var lngmax = Math.max(corner1Point.lng, corner2Point.lng);
+
+            // =====================================================
+            // TODO: Calcular GSD, huella, separaciones
+            // =====================================================
+
+            var GSD = 0;            // TODO: Calcular GSD en cm/pixel
+            var huellaAncho = 0;    // TODO: Huella en metros (ancho)
+            var huellaAlto = 0;     // TODO: Huella en metros (alto)
+            var sepPasadas = 0;     // TODO: Separación entre pasadas en metros
+            var sepFotos = 0;       // TODO: Separación entre fotos en metros
+
+            // =====================================================
+            // TODO: Generar waypoints
+            // =====================================================
+
+            var waypoints = [];
+
+            // TODO: Implementar generación de waypoints en zigzag
+            // - Empezar desde la esquina más cercana al takeoff
+            // - Recorrer el área con pasadas paralelas
+            // - Separación entre pasadas = sepPasadas
+            // - Cada pasada va de un extremo al otro
+
+            // =====================================================
+            // TODO: Dibujar waypoints y ruta en el mapa
+            // =====================================================
+
+            // Limpiar waypoints anteriores
+            waypointMarkers.forEach(m => map.removeLayer(m));
+            waypointMarkers = [];
+            if (flightPath) map.removeLayer(flightPath);
+
+            // TODO: Dibujar cada waypoint como marcador numerado
+            // TODO: Dibujar la ruta de vuelo como polyline
+
+            // =====================================================
+            // Mostrar resultados (actualizar cuando tengas los valores)
+            // =====================================================
+
+            document.getElementById('resGSD').innerText = GSD.toFixed(2);
+            document.getElementById('resHuella').innerText = huellaAncho.toFixed(1) + ' x ' + huellaAlto.toFixed(1) + ' m';
+            document.getElementById('resSepPasadas').innerText = sepPasadas.toFixed(1);
+            document.getElementById('resSepFotos').innerText = sepFotos.toFixed(1);
+            document.getElementById('resWaypoints').innerText = waypoints.length;
+            document.getElementById('resultados').style.display = 'block';
+
+            console.log('Waypoints generados:', waypoints);
+        }
+
+        // =====================================================
+        // FUNCIONES AUXILIARES (puedes usarlas o crear las tuyas)
+        // =====================================================
+
+        /**
+         * Convierte metros a grados de latitud
+         * @param {number} metros
+         * @returns {number} grados
+         */
+        function metrosAGradosLat(metros) {
+            return metros / 111320;
+        }
+
+        /**
+         * Convierte metros a grados de longitud (depende de la latitud)
+         * @param {number} metros
+         * @param {number} latitud - en grados
+         * @returns {number} grados
+         */
+        function metrosAGradosLng(metros, latitud) {
+            return metros / (111320 * Math.cos(latitud * Math.PI / 180));
+        }
+
+        /**
+         * Calcula distancia entre dos puntos usando Haversine
+         * @returns {number} distancia en metros
+         */
+        function distanciaHaversine(lat1, lng1, lat2, lng2) {
+            var R = 6371000;
+            var phi1 = lat1 * Math.PI / 180;
+            var phi2 = lat2 * Math.PI / 180;
+            var deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            var deltaLambda = (lng2 - lng1) * Math.PI / 180;
+
+            var a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
+                    Math.cos(phi1) * Math.cos(phi2) *
+                    Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return R * c;
+        }
+    </script>
+</body>
+</html>

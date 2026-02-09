@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02 - Puntos y Líneas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #toolbar {
+            position: absolute;
+            top: 10px;
+            left: 60px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        #toolbar button {
+            padding: 8px 16px;
+            margin-right: 5px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f8f8f8;
+        }
+        #toolbar button.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        #toolbar button:hover {
+            background: #e0e0e0;
+        }
+        #toolbar button.active:hover {
+            background: #45a049;
+        }
+        #map { height: 100vh; width: 100%; }
+        #info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button id="btnPunto" onclick="setMode('punto')">📍 Punto</button>
+        <button id="btnLinea" onclick="setMode('linea')">📏 Línea</button>
+        <button onclick="limpiar()">🗑️ Limpiar</button>
+    </div>
+    <div id="map"></div>
+    <div id="info">Modo: <span id="modoActual">Ninguno</span></div>
+
+    <script>
+        var map = L.map('map').setView([40.416775, -3.703790], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var modo = '';
+        var markers = [];
+        var lineas = [];
+        var puntosLinea = [];
+
+        function setMode(nuevoModo) {
+            modo = nuevoModo;
+            document.getElementById('modoActual').innerText = nuevoModo;
+
+            // Actualizar botones
+            document.getElementById('btnPunto').classList.remove('active');
+            document.getElementById('btnLinea').classList.remove('active');
+            if (nuevoModo === 'punto') {
+                document.getElementById('btnPunto').classList.add('active');
+            } else if (nuevoModo === 'linea') {
+                document.getElementById('btnLinea').classList.add('active');
+                puntosLinea = []; // Reset puntos de línea
+            }
+        }
+
+        function limpiar() {
+            markers.forEach(m => map.removeLayer(m));
+            lineas.forEach(l => map.removeLayer(l));
+            markers = [];
+            lineas = [];
+            puntosLinea = [];
+            modo = '';
+            document.getElementById('modoActual').innerText = 'Ninguno';
+            document.getElementById('btnPunto').classList.remove('active');
+            document.getElementById('btnLinea').classList.remove('active');
+        }
+
+        map.on('click', function(e) {
+            if (modo === 'punto') {
+                var marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+                marker.bindPopup('Lat: ' + e.latlng.lat.toFixed(6) + '<br>Lng: ' + e.latlng.lng.toFixed(6));
+                markers.push(marker);
+            }
+            else if (modo === 'linea') {
+                puntosLinea.push([e.latlng.lat, e.latlng.lng]);
+
+                // Marcador pequeño en cada punto
+                var marker = L.circleMarker([e.latlng.lat, e.latlng.lng], {
+                    radius: 5,
+                    color: 'blue',
+                    fillColor: 'blue',
+                    fillOpacity: 1
+                }).addTo(map);
+                markers.push(marker);
+
+                // Si hay 2+ puntos, dibujar línea
+                if (puntosLinea.length >= 2) {
+                    // Borrar línea anterior si existe
+                    if (lineas.length > 0 && lineas[lineas.length - 1].temporal) {
+                        map.removeLayer(lineas.pop());
+                    }
+                    var linea = L.polyline(puntosLinea, {
+                        color: 'blue',
+                        weight: 3
+                    }).addTo(map);
+                    linea.temporal = true;
+                    lineas.push(linea);
+                }
+            }
+        });
+
+        // Doble clic para terminar línea
+        // map.on('dblclick', function(e) {
+        //     if (modo === 'linea' && puntosLinea.length >= 2) {
+        //         if (lineas.length > 0) {
+        //             lineas[lineas.length - 1].temporal = false;
+        //         }
+        //         puntosLinea = [];
+        //     }
+        // });
+    </script>
+</body>
+</html>
