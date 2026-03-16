@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente API de Nombres</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 420px;
+            max-width: 95vw;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        h2 {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        button {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .btn-get {
+            background: #4a90d9;
+        }
+
+        .btn-put {
+            background: #27ae60;
+        }
+
+        .result {
+            margin-top: 0.8rem;
+            padding: 0.7rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #333;
+            min-height: 2.2rem;
+        }
+
+        .result.error {
+            background: #fdecea;
+            color: #c0392b;
+        }
+
+        .result.success {
+            background: #eafaf1;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cliente API de Nombres</h1>
+
+        <!-- Configuración del servidor -->
+        <div class="section">
+            <h2>Conexión al servidor</h2>
+            <div class="row">
+                <div style="flex: 2;">
+                    <label for="server-ip">IP / Hostname</label>
+                    <input type="text" id="server-ip" value="localhost">
+                </div>
+                <div style="flex: 1;">
+                    <label for="server-port">Puerto</label>
+                    <input type="number" id="server-port" value="5050">
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultar nombre -->
+        <div class="section">
+            <h2>Consultar nombre</h2>
+            <button class="btn-get" onclick="getNombre()">Obtener nombre</button>
+            <div id="result-get" class="result">—</div>
+        </div>
+
+        <!-- Establecer nombre -->
+        <div class="section">
+            <h2>Establecer nombre</h2>
+            <div class="row">
+                <div style="flex: 1;">
+                    <input type="text" id="input-nombre" placeholder="Escribe un nombre...">
+                </div>
+                <button class="btn-put" onclick="putNombre()">Guardar</button>
+            </div>
+            <div id="result-put" class="result">—</div>
+        </div>
+    </div>
+
+    <script>
+        function getBaseUrl() {
+            const ip = document.getElementById("server-ip").value.trim();
+            const port = document.getElementById("server-port").value.trim();
+            return `http://${ip}:${port}`;
+        }
+
+        async function getNombre() {
+            const resultDiv = document.getElementById("result-get");
+            resultDiv.className = "result";
+            resultDiv.textContent = "Consultando...";
+
+            try {
+                const resp = await fetch(`${getBaseUrl()}/nombre`);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                resultDiv.className = "result success";
+                resultDiv.textContent = data.nombre
+                    ? `Nombre almacenado: ${data.nombre}`
+                    : "(vacío — no se ha guardado ningún nombre todavía)";
+            } catch (err) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = `Error: ${err.message}`;
+            }
+        }
+
+        async function putNombre() {
+            const nombre = document.getElementById("input-nombre").value.trim();
+            const resultDiv = document.getElementById("result-put");
+
+            if (!nombre) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = "Escribe un nombre primero.";
+                return;
+            }
+
+            resultDiv.className = "result";
+            resultDiv.textContent = "Guardando...";
+
+            try {
+                const resp = await fetch(`${getBaseUrl()}/nombre`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre }),
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                resultDiv.className = "result success";
+                resultDiv.textContent = data.mensaje;
+            } catch (err) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = `Error: ${err.message}`;
+            }
+        }
+
+        // Permitir enviar con Enter en el campo de texto
+        document.getElementById("input-nombre").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") putNombre();
+        });
+    </script>
+</body>
+</html>

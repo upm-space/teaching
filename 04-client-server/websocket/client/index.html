@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente WebSocket - Contador</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 400px;
+            max-width: 95vw;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        h2 {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            text-align: left;
+        }
+
+        .row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        .counter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            font-variant-numeric: tabular-nums;
+            padding: 1.5rem 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+            min-width: 90px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-start {
+            background: #27ae60;
+        }
+
+        .btn-stop {
+            background: #e67e22;
+        }
+
+        .btn-reset {
+            background: #c0392b;
+        }
+
+        .btn-connect {
+            background: #4a90d9;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .status {
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+            padding: 0.4rem;
+            border-radius: 6px;
+        }
+
+        .status.connected {
+            color: #27ae60;
+            background: #eafaf1;
+        }
+
+        .status.disconnected {
+            color: #c0392b;
+            background: #fdecea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contador en tiempo real</h1>
+
+        <!-- Configuración del servidor -->
+        <div class="section">
+            <h2>Conexión al servidor</h2>
+            <div class="row">
+                <div style="flex: 2;">
+                    <label for="server-ip">IP / Hostname</label>
+                    <input type="text" id="server-ip" value="localhost">
+                </div>
+                <div style="flex: 1;">
+                    <label for="server-port">Puerto</label>
+                    <input type="number" id="server-port" value="8765">
+                </div>
+            </div>
+            <button class="btn-connect" id="btn-connect" onclick="toggleConnection()">Conectar</button>
+            <div id="status" class="status disconnected">Desconectado</div>
+        </div>
+
+        <!-- Contador -->
+        <div class="section">
+            <div class="counter-display" id="counter">0.0</div>
+        </div>
+
+        <!-- Controles -->
+        <div class="section">
+            <div class="controls">
+                <button class="btn-start" id="btn-start" onclick="send('start')" disabled>Arrancar</button>
+                <button class="btn-stop" id="btn-stop" onclick="send('stop')" disabled>Parar</button>
+                <button class="btn-reset" id="btn-reset" onclick="send('reset')" disabled>Resetear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+
+        function toggleConnection() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            } else {
+                connect();
+            }
+        }
+
+        function connect() {
+            const ip = document.getElementById("server-ip").value.trim();
+            const port = document.getElementById("server-port").value.trim();
+            const url = `ws://${ip}:${port}`;
+
+            setStatus("Conectando...", "disconnected");
+
+            ws = new WebSocket(url);
+
+            ws.onopen = () => {
+                setStatus("Conectado", "connected");
+                document.getElementById("btn-connect").textContent = "Desconectar";
+                setButtons(true);
+            };
+
+            ws.onclose = () => {
+                setStatus("Desconectado", "disconnected");
+                document.getElementById("btn-connect").textContent = "Conectar";
+                setButtons(false);
+            };
+
+            ws.onerror = () => {
+                setStatus("Error de conexión", "disconnected");
+                setButtons(false);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.counter !== undefined) {
+                    document.getElementById("counter").textContent = data.counter.toFixed(1);
+                }
+
+                if (data.running !== undefined) {
+                    updateButtonStates(data.running);
+                }
+
+                if (data.type === "update" && data.running === undefined) {
+                    // Solo actualización de contador, no cambiar botones
+                }
+            };
+        }
+
+        function send(action) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ action }));
+            }
+        }
+
+        function setStatus(text, cls) {
+            const el = document.getElementById("status");
+            el.textContent = text;
+            el.className = "status " + cls;
+        }
+
+        function setButtons(enabled) {
+            document.getElementById("btn-start").disabled = !enabled;
+            document.getElementById("btn-stop").disabled = !enabled;
+            document.getElementById("btn-reset").disabled = !enabled;
+        }
+
+        function updateButtonStates(isRunning) {
+            document.getElementById("btn-start").disabled = isRunning;
+            document.getElementById("btn-stop").disabled = !isRunning;
+            // Reset siempre habilitado si estamos conectados
+            document.getElementById("btn-reset").disabled = false;
+        }
+    </script>
+</body>
+</html>
