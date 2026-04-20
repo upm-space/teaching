@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Drones</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            color: #222;
+        }
+        h1 { color: #2c3e50; }
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            background: #f5f7fa;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        form label {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        form input, form select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+        .acciones {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 0.5rem;
+        }
+        button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .btn-primary { background: #2c7be5; color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-edit { background: #f39c12; color: white; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.6rem;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f5f7fa; }
+        .estado {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .estado-operativo { background: #d4edda; color: #155724; }
+        .estado-mantenimiento { background: #fff3cd; color: #856404; }
+        .estado-baja { background: #f8d7da; color: #721c24; }
+        #mensaje {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .ok { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>✈️ Registro de Drones</h1>
+    <p>Aplicación CRUD de ejemplo sobre Docker Compose (Flask + MongoDB + mongo-express).</p>
+
+    <div id="mensaje"></div>
+
+    <form id="form-drone">
+        <input type="hidden" id="drone-id">
+        <label>
+            Modelo *
+            <input type="text" id="modelo" required>
+        </label>
+        <label>
+            Fabricante *
+            <input type="text" id="fabricante" required>
+        </label>
+        <label>
+            Peso (kg)
+            <input type="number" id="peso_kg" step="0.01" min="0">
+        </label>
+        <label>
+            Autonomía (min)
+            <input type="number" id="autonomia_min" min="0">
+        </label>
+        <label>
+            Estado
+            <select id="estado">
+                <option value="operativo">Operativo</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="baja">Baja</option>
+            </select>
+        </label>
+        <div class="acciones">
+            <button type="submit" class="btn-primary" id="btn-guardar">Guardar</button>
+            <button type="button" class="btn-secondary" id="btn-cancelar">Limpiar</button>
+        </div>
+    </form>
+
+    <h2>Listado</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Modelo</th>
+                <th>Fabricante</th>
+                <th>Peso (kg)</th>
+                <th>Autonomía (min)</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tabla-drones"></tbody>
+    </table>
+
+    <script>
+        const API = 'http://localhost:5000/api/drones';
+
+        const form = document.getElementById('form-drone');
+        const tabla = document.getElementById('tabla-drones');
+        const mensaje = document.getElementById('mensaje');
+        const btnCancelar = document.getElementById('btn-cancelar');
+        const btnGuardar = document.getElementById('btn-guardar');
+
+        function mostrarMensaje(texto, tipo) {
+            mensaje.textContent = texto;
+            mensaje.className = tipo;
+            mensaje.style.display = 'block';
+            setTimeout(() => { mensaje.style.display = 'none'; }, 3000);
+        }
+
+        function limpiarForm() {
+            form.reset();
+            document.getElementById('drone-id').value = '';
+            btnGuardar.textContent = 'Guardar';
+        }
+
+        async function cargarDrones() {
+            try {
+                const res = await fetch(API);
+                const drones = await res.json();
+                tabla.innerHTML = '';
+                if (drones.length === 0) {
+                    tabla.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999">No hay drones registrados</td></tr>';
+                    return;
+                }
+                drones.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${d.modelo ?? ''}</td>
+                        <td>${d.fabricante ?? ''}</td>
+                        <td>${d.peso_kg ?? ''}</td>
+                        <td>${d.autonomia_min ?? ''}</td>
+                        <td><span class="estado estado-${d.estado}">${d.estado}</span></td>
+                        <td>
+                            <button class="btn-edit" data-id="${d.id}" data-action="edit">Editar</button>
+                            <button class="btn-danger" data-id="${d.id}" data-action="delete">Borrar</button>
+                        </td>
+                    `;
+                    tabla.appendChild(tr);
+                });
+            } catch (err) {
+                mostrarMensaje('No se puede conectar con el servidor', 'error');
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('drone-id').value;
+            const payload = {
+                modelo: document.getElementById('modelo').value,
+                fabricante: document.getElementById('fabricante').value,
+                peso_kg: parseFloat(document.getElementById('peso_kg').value) || null,
+                autonomia_min: parseInt(document.getElementById('autonomia_min').value) || null,
+                estado: document.getElementById('estado').value,
+            };
+            const url = id ? `${API}/${id}` : API;
+            const method = id ? 'PUT' : 'POST';
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Error');
+                }
+                mostrarMensaje(id ? 'Dron actualizado' : 'Dron creado', 'ok');
+                limpiarForm();
+                cargarDrones();
+            } catch (err) {
+                mostrarMensaje(err.message, 'error');
+            }
+        });
+
+        btnCancelar.addEventListener('click', limpiarForm);
+
+        tabla.addEventListener('click', async (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+
+            if (action === 'delete') {
+                if (!confirm('¿Borrar este dron?')) return;
+                const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    mostrarMensaje('Dron borrado', 'ok');
+                    cargarDrones();
+                } else {
+                    mostrarMensaje('Error al borrar', 'error');
+                }
+            } else if (action === 'edit') {
+                const res = await fetch(`${API}/${id}`);
+                const d = await res.json();
+                document.getElementById('drone-id').value = d.id;
+                document.getElementById('modelo').value = d.modelo ?? '';
+                document.getElementById('fabricante').value = d.fabricante ?? '';
+                document.getElementById('peso_kg').value = d.peso_kg ?? '';
+                document.getElementById('autonomia_min').value = d.autonomia_min ?? '';
+                document.getElementById('estado').value = d.estado ?? 'operativo';
+                btnGuardar.textContent = 'Actualizar';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        cargarDrones();
+    </script>
+</body>
+</html>
