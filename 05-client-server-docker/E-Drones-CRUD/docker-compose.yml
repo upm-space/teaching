@@ -37,7 +37,7 @@ services:
       MONGO_URI: mongodb://admin:admin123@mongo:27017/
       DB_NAME: dronesdb
     ports:
-      - "5000:5000"
+      - "5001:5000"
 
   client:
     build: ./client
